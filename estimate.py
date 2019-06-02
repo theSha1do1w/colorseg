@@ -26,4 +26,4 @@ col = np.array([[234.88073179380257, 250.0879701331056, 253.40816722060174], [87
 
 img = cv.imread('test/7.jpg')
 
-print(pred(col), distance_count(col,img))
+print('point:', pred(col), ' distance:', distance_count(col,img))
