@@ -1,18 +1,20 @@
 import matplotlib.image as mpimg
-import matplotlib.pyplot as plt
 import numpy as np
 import scipy.optimize as sco
-from sklearn.cluster import KMeans
-from PIL import Image
 import cv2 as cv2
 import os
 import glob
 import time
+import itertools
+from sklearn.cluster import KMeans
+from PIL import Image
+
 from data_set import pred
 
 
 image_path = './test'
 K = 5
+alpha = 0.1
 paths = glob.glob(os.path.join(image_path, '*.jpg'))
 
 
@@ -112,7 +114,7 @@ def distance_count(clr, img):
 
 
 def fuction2op(clr):
-    return distance_count(clr, img)*0.1 - pred(clr)
+    return distance_count(clr, img)*alpha - pred(clr)
 
 
 def callbackf(x):
@@ -120,6 +122,16 @@ def callbackf(x):
     print(np.array2string(x, separator=', '))
     print(time.ctime())
 
+
+def max_point(clr):
+    max_p = 0
+    clr_per = clr
+    for i in list(itertools.permutations([0, 1, 2, 3, 4])):
+        hi_clr = np.array([clr[i[0]], clr[i[1]], clr[i[2]], clr[i[3]], clr[i[4]]])
+        if max_p < pred(hi_clr):
+            max_p = pred(hi_clr)
+            clr_per = hi_clr
+    return clr_per
 
 for path in paths:
     title = path.split('\\')
@@ -129,22 +141,26 @@ for path in paths:
     seg_res = seg(path)
     #show_color_knn(knn_res[0], title)
     #print(pred(knn_res[0]), knn_res[1])
-    show_color_seg(seg_res[0].reshape(5,3), title)
+    show_color_seg(seg_res[0].reshape(5, 3), title)
     #print(pred(seg_res[0]), seg_res[1])
     img = cv2.imread(path)
     print('start point and distance:', fuction2op(seg_res[0]), seg_res[1])
-    print('try:', distance_count(seg_res[0], img))
-    print('seg result color:', np.array2string(seg_res[0], separator=', '))
+    print('start estimate:', pred(seg_res[0]))
+    print('seg result color:')
+    print(np.array2string(seg_res[0], separator=', '))
     print('start time:', time.ctime())
     print('----------  optimize start  -----------')
-    res = sco.fmin(fuction2op, seg_res[0], maxiter=50)
+    inp = max_point(seg_res[0].reshape(5, 3))
+    res = sco.fmin(fuction2op, inp, maxiter=50)
+    print('optimize finish time:', time.ctime())
     print('---------- optimize finish ------------')
     res = np.array(res)
     res = res.reshape(5, 3)
-    print('optimize point:', fuction2op(res))
+    print('optimized point and distance:', fuction2op(res), distance_count(res, img))
+    print('optimized estimate:', pred(res))
     res = res.tolist()
-    res.sort(reverse=True)
     show_color_seg(res, title+'_opt')
+    print('optimized result:')
     print(res)
     print('------------------image '+title + ' is over------------------')
 
