@@ -14,7 +14,7 @@ from data_set import pred
 
 image_path = './test'
 K = 5
-alpha = 0.1
+alpha = 0.05
 paths = glob.glob(os.path.join(image_path, '*.jpg'))
 
 
@@ -34,7 +34,7 @@ def show_color_knn(ImgIdx, title):
                 c.putpixel([i, j], (int(ImgIdx[3][0]), int(ImgIdx[3][1]), int(ImgIdx[3][2])))
             elif i < 1000:
                 c.putpixel([i, j], (int(ImgIdx[4][0]), int(ImgIdx[4][1]), int(ImgIdx[4][2])))
-    c.save('./result1/' + title + '_knn.jpg')
+    c.save('./result05/' + title + '_knn.jpg')
 
 
 def show_color_seg(ImgIdx, title):
@@ -53,7 +53,7 @@ def show_color_seg(ImgIdx, title):
                 c.putpixel([i, j], (int(ImgIdx[3][2]), int(ImgIdx[3][1]), int(ImgIdx[3][0])))
             elif i < 1000:
                 c.putpixel([i, j], (int(ImgIdx[4][2]), int(ImgIdx[4][1]), int(ImgIdx[4][0])))
-    c.save('./result1/' + title + '_seg.jpg')
+    c.save('./result05/' + title + '_seg.jpg')
 
 
 def distance_pixel(x, y):
@@ -102,7 +102,7 @@ def seg(path):
 
 
 def distance_count(clr, img):
-    clr = clr.reshape(5,3)
+    clr = clr.reshape(5, 3)
     distance_list = []
     for i in range(img.shape[0]):
         for j in range(img.shape[1]):
